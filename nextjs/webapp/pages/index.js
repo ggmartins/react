@@ -1,10 +1,9 @@
-import Navbar from "../components/navbar";
+import Layout from "../components/layout";
 
 const Index = () => (
-    <div>
-        <Navbar/>
+    <Layout>
         <h1>Hello React Components v0.1</h1>
-    </div>
+    </Layout>
 );
 
-export default Index 
+export default Index;

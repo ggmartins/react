@@ -1,10 +1,9 @@
-import Navbar from "../components/navbar";
+import Layout from "../components/layout";
 
 const About = () => (
-    <div>
-        <Navbar/>
-        <h1>About Next.js v0.1</h1>
-    </div>
+    <Layout>
+        <h1>About React Components v0.1</h1>
+    </Layout>
 );
   
   
