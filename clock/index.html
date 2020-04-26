@@ -92,7 +92,7 @@
           console.log("handleMouseLeave");
           //e.target.style.color = 'black';
           this.setState({"clockColor":"color_black"});
-        }
+        } 
 
         render() {
           return (
@@ -100,7 +100,7 @@
                  onMouseOver={this.handleMouseOver}
                  onMouseEnter={this.handleMouseEnter}
                  onMouseLeave={this.handleMouseLeave}
-                 className={this.state.clockColor}
+                 className={`${this.state.clockColor}`}
             >
               <h1>Hello, world!</h1>
               <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
