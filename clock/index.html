@@ -77,27 +77,28 @@
           }));
         }
 
-        handleMouseOver(e) {
-          console.log("handleMouseOver");
-          e.target.style.fontStyle = "italic";
-        }
-
         handleMouseEnter(e) {
-          console.log("handleMouseEnter");
+          console.log("handleMouseEnter" + e.target);
           //e.target.style.color = 'red';
           this.setState({"clockColor":"color_red"});
         }
 
         handleMouseLeave(e) {
-          console.log("handleMouseLeave");
+          console.log("handleMouseLeave:" + e.target);
           //e.target.style.color = 'black';
           this.setState({"clockColor":"color_black"});
-        } 
+        }
+  
+        handleMouseOver(e) {
+          //italic applied only to e.target element
+          //as opposed to outer div like for Enter/Leave
+          console.log("handleMouseOver" + e.target);
+          e.target.style.fontStyle = "italic"; 
+        }
 
         render() {
-          let t=this.state.date.toLocaleTimeString('en-US')
-          t=t[t.length-2]
-          console.log(t)
+          let time=this.state.date.toLocaleTimeString('en-US')
+          let t=time[time.length-2]
           let icon = <i class="fa fa-sun-o"></i>
           if (t == 'P') //PM
             icon = <i class="fa fa-moon-o"></i>
@@ -109,9 +110,9 @@
                  onMouseLeave={this.handleMouseLeave}
                  className={`${this.state.clockColor}`}
             >
-              <h1>Hello, world!</h1>
+              <h1><b>Hello, world!</b></h1>
               <h2>
-                It is {this.state.date.toLocaleTimeString('en-US')}.
+                It is {time}.
                 {icon}
               </h2>
             </div>
@@ -119,8 +120,51 @@
         }
       }
 
+      class Search extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {value: ''};
+
+          this.handleChange = this.handleChange.bind(this);
+          this.handleSubmit = this.handleSubmit.bind(this);
+        }
+
+        handleChange(e) {
+          this.setState({value: e.target.value});
+          console.log(e.target.value)
+        }
+
+        handleSubmit(e) {
+          alert('A text was submitted: ' + this.state.value);
+          e.preventDefault();
+        }
+
+        render() {
+          return (
+            <form onSubmit={this.handleSubmit}>
+              <label>
+                Search:
+                <input type="text" value={this.state.value} onChange={this.handleChange} />
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
+          );
+        }
+      }
+
+      class App extends React.Component {
+        render(){
+          return (
+            <div>
+              <Clock />
+              <br />
+              <Search />
+            </div>
+          );
+        }
+      }
       ReactDOM.render(
-        <Clock />,
+        <App />,
         document.getElementById('root')
       );
     </script>
