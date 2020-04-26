@@ -12,6 +12,19 @@
 
     <!-- Don't use this in production: -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      html {
+        font-family: eurostile;
+      }
+    </style>
+    <style src="clock.module.css">
+      .color_red {
+        color: red;
+      }
+      .color_black {
+        color: black;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -26,7 +39,15 @@
       class Clock extends React.Component {
         constructor(props) {
           super(props);
-          this.state = {date: new Date()};
+          this.state = {
+            date: new Date(),
+            isToggleOn: true,
+            clockColor: "color_black"
+          };
+          this.handleClick = this.handleClick.bind(this);
+          this.handleMouseOver = this.handleMouseOver.bind(this);
+          this.handleMouseEnter = this.handleMouseEnter.bind(this);
+          this.handleMouseLeave = this.handleMouseLeave.bind(this);
         }
 
         componentDidMount() {
@@ -41,14 +62,46 @@
         }
 
         tick() {
-          this.setState({
-            date: new Date()
-          });
+          if (this.state.isToggleOn) {
+            this.setState({
+              date: new Date()
+            });
+          } else {
+            console.log("Clock: disabled")
+          }
+        }
+
+        handleClick() {
+          this.setState(state => ({
+            isToggleOn: !state.isToggleOn
+          }));
+        }
+
+        handleMouseOver(e) {
+          console.log("handleMouseOver");
+          e.target.style.fontStyle = "italic";
+        }
+
+        handleMouseEnter(e) {
+          console.log("handleMouseEnter");
+          //e.target.style.color = 'red';
+          this.setState({"clockColor":"color_red"});
+        }
+
+        handleMouseLeave(e) {
+          console.log("handleMouseLeave");
+          //e.target.style.color = 'black';
+          this.setState({"clockColor":"color_black"});
         }
 
         render() {
           return (
-            <div>
+            <div onClick={this.handleClick}
+                 onMouseOver={this.handleMouseOver}
+                 onMouseEnter={this.handleMouseEnter}
+                 onMouseLeave={this.handleMouseLeave}
+                 className={this.state.clockColor}
+            >
               <h1>Hello, world!</h1>
               <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
             </div>
