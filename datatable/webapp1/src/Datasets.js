@@ -14,7 +14,7 @@ export default [
       primary: [
         {
           note: "Primary Location",
-          url: "http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#",
+          url: "http://projectbismark.net.s3-website.us-east-2.amazonaws.com/",
           metatags: "auto"
         }
       ],

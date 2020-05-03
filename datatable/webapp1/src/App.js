@@ -24,8 +24,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import DataTable from 'react-data-table-component';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import ModalImage from 'react-modal-image';
+
 import styled from 'styled-components';
 import data from './Datasets.js';
+
 
 const columns = [
   {
@@ -155,16 +158,20 @@ class Expansion extends React.Component {
     textAlign: 'left',
   };
 
+  handleResourceZoom (e) {
+    alert('handleResourceZoom');
+  }
   render () {
     return (
       <ExpansionStyle>
         <Card style={this.card1Style}>
           <CardContent>
-            <img 
-              width="100%"
-              src="http://projectbismark.net.s3-website.us-east-2.amazonaws.com/poster20191017.jpg"
-              alt="http://projectbismark.net.s3-website.us-east-2.amazonaws.com/poster20191017.jpg"
-            /><br />
+              <ModalImage
+                small={this.data.refurls.primary[0].url+"poster20191017.jpg"}
+                large={this.data.refurls.primary[0].url+"poster20191017.jpg"}
+                hideDownload={true}
+                hideZoom={true}
+              />
           </CardContent>
           <CardContent style={this.cardInfoStyle}>
             <b>Name:</b> {this.data.title} <br />
@@ -191,14 +198,14 @@ class Expansion extends React.Component {
                             <CardInfoLink>
                               <CopyToClipboard
                                 onCopy={(e)=>this.snackBarHandle(e)}
-                                text={"http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#"}>
+                                text={this.data.refurls.primary[0].url}>
                                 <WeblinkIcon 
                                   style={{ marginRight: '3px', marginTop: '3px' }}
                                   /*onClick={()=>{alert('test')}}*/
                                 />
                               </CopyToClipboard>
-                              <a href="http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#">
-                                  http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#
+                              <a href={this.data.refurls.primary[0].url}>
+                                {this.data.refurls.primary[0].url}
                               </a>
                             </CardInfoLink>
                           </TableCell>
