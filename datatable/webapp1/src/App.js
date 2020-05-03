@@ -3,7 +3,6 @@ import React from 'react';
 import './App.css';
 
 import IconSearch from '@material-ui/icons/Search';
-import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -124,6 +123,7 @@ const CardInfoLink = styled.div`
   display: flex;
   vertical-align: middle,
 `;
+
 //  display: flex;
 //  vertical-align: middle,
 
@@ -132,19 +132,11 @@ const CardInfoLink = styled.div`
   return <span>{`(min-width:600px) matches: ${matches}`}</span>;
 }*/
 
-//const Expansion = ({ data }) => { 
-
-
-
 class Expansion extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      open : false,
-    };
-    this.handleClick = this.handleClick.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.setOpen = this.setOpen.bind(this);
+    this.data = props.data;
+    this.snackBarHandle = props.snackBarHandle.bind(this);
   }
 
   card1Style =  {
@@ -163,43 +155,9 @@ class Expansion extends React.Component {
     textAlign: 'left',
   };
 
-  setOpen (b) {
-    this.state.open = b;
-  }
-
-  handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setOpen(false);
-  };
-
-  handleClick = (e) => {
-    this.setOpen(true);
-    //alert("here2");
-    //e.preventDefault()
-  };
-
   render () {
     return (
       <ExpansionStyle>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          open={this.state.open}
-          autoHideDuration={6000}
-          onClose={this.handleClose}
-          message="URL Copied."
-          action={
-            <React.Fragment>
-              <IconButton size="small" aria-label="close" color="inherit" onClick={this.handleClose}>
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </React.Fragment>
-          }
-        />
         <Card style={this.card1Style}>
           <CardContent>
             <img 
@@ -209,9 +167,9 @@ class Expansion extends React.Component {
             /><br />
           </CardContent>
           <CardContent style={this.cardInfoStyle}>
-            <b>Name:</b> {data.title} <br />
-            <b>Description:</b> {data.description} <br />
-            <b>Key Words: {data.keywords} </b>
+            <b>Name:</b> {this.data.title} <br />
+            <b>Description:</b> {this.data.description} <br />
+            <b>Key Words: {this.data.keywords} </b>
           </CardContent>
         </Card>
         <Card style={this.card2Style}>
@@ -228,22 +186,23 @@ class Expansion extends React.Component {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                    <TableCell > {/*component="th" scope="row" */}
-                      <CardInfoLink>
-                        <CopyToClipboard
-                          onCopy={(e)=>this.handleClick(e)}
-                          text={"http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#"}>
-                          <WeblinkIcon 
-                            style={{ marginRight: '3px', marginTop: '3px' }}
-                            /*onClick={()=>{alert('test')}}*/
-                          />
-                        </CopyToClipboard>
-                        <a href="http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#">
-                            http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#
-                        </a>
-                      </CardInfoLink>
-                    </TableCell>
-                        
+                      <TableRow>  
+                          <TableCell > {/*component="th" scope="row" */}
+                            <CardInfoLink>
+                              <CopyToClipboard
+                                onCopy={(e)=>this.snackBarHandle(e)}
+                                text={"http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#"}>
+                                <WeblinkIcon 
+                                  style={{ marginRight: '3px', marginTop: '3px' }}
+                                  /*onClick={()=>{alert('test')}}*/
+                                />
+                              </CopyToClipboard>
+                              <a href="http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#">
+                                  http://projectbismark.net.s3-website.us-east-2.amazonaws.com/#
+                              </a>
+                            </CardInfoLink>
+                          </TableCell>
+                      </TableRow>
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -255,14 +214,6 @@ class Expansion extends React.Component {
     );//return
   }//render
 }//Expansion
-
-/*
-<SampleStyle>
-<p>
-  {data.title}
-</p>
-</SampleStyle>
-*/
 
 const FilterField = ({ filterText, onFilter, onClear }) => (
   <>
@@ -288,8 +239,8 @@ const FilterField = ({ filterText, onFilter, onClear }) => (
 );
 
 function App() {
+  const [open, setOpen] = React.useState(false);
   const [filterText, setFilterText] = React.useState('');
-
   const filteredData = data.filter( i => i.title && (
                                          i.title.includes(filterText) ||
                                          i.shortdesc.includes(filterText) ||
@@ -297,9 +248,38 @@ function App() {
                                         )
                                   );
 
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   return (
     <div className="App">
-
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="URL Copied."
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
       <DataTable
         title="Movie List"
         columns={columns}
@@ -337,7 +317,7 @@ function App() {
         paginationComponentOptions={paginationOptions}
         //fixedHeaderScrollHeight="300px"
         //direction={directionValue}
-        expandableRowsComponent={<Expansion />}
+        expandableRowsComponent={<Expansion snackBarHandle={handleClick} />}
       />
     </div>
   );
