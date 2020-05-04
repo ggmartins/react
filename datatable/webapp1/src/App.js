@@ -1,7 +1,7 @@
 import React from 'react';
 //import logo from './logo.svg';
 import './App.css';
-
+//TODO: TypeScript
 import IconSearch from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
@@ -25,6 +25,7 @@ import Button from '@material-ui/core/Button';
 import DataTable from 'react-data-table-component';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import ModalImage from 'react-modal-image';
+import Modal from 'react-modal';
 
 import styled from 'styled-components';
 import data from './Datasets.js';
@@ -140,6 +141,7 @@ class Expansion extends React.Component {
     super(props);
     this.data = props.data;
     this.snackBarHandle = props.snackBarHandle.bind(this);
+    this.moreInfoHandle = props.moreInfoHandle.bind(this);
   }
 
   card1Style =  {
@@ -158,9 +160,6 @@ class Expansion extends React.Component {
     textAlign: 'left',
   };
 
-  handleResourceZoom (e) {
-    alert('handleResourceZoom');
-  }
   render () {
     return (
       <ExpansionStyle>
@@ -246,7 +245,7 @@ class Expansion extends React.Component {
                       </TableRow>
                       <TableRow>
                         <TableCell> {/*style={{border: '1px solid black'}}*/}
-                          <Button variant="contained" onClick={()=>alert('TBD')}>More Info</Button>
+                          <Button variant="contained" onClick={this.moreInfoHandle}>More Info</Button>
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -284,8 +283,23 @@ const FilterField = ({ filterText, onFilter, onClear }) => (
   </>
 );
 
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
+
+
+Modal.setAppElement('#root')
+
 function App() {
-  const [open, setOpen] = React.useState(false);
+  const [openModalImage, setOpenModalImage] = React.useState(false);
+  const [openModalInfo, setOpenModalInfo] = React.useState(false);
   const [filterText, setFilterText] = React.useState('');
   const filteredData = data.filter( i => i.title && (
                                          i.title.includes(filterText) ||
@@ -296,7 +310,7 @@ function App() {
 
 
   const handleClick = () => {
-    setOpen(true);
+    setOpenModalImage(true);
   };
 
   const handleClose = (event, reason) => {
@@ -304,17 +318,47 @@ function App() {
       return;
     }
 
-    setOpen(false);
+    setOpenModalImage(false);
   };
+
+  function openModal() {
+    setOpenModalInfo(true);
+  }
+
+  function afterOpenModalInfo() {
+    // references are now sync'd and can be accessed.
+    //subtitle.style.color = '#f00';
+  }
+ 
+  function closeModalInfo(){
+    setOpenModalInfo(false);
+  }
 
   return (
     <div className="App">
+      <Modal
+        isOpen={openModalInfo}
+        onAfterOpen={afterOpenModalInfo}
+        onRequestClose={closeModalInfo}
+        style={customStyles}
+        contentLabel="Example Modal"
+      > 
+        <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
+             when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
+             It has survived not only five centuries, but also the leap into electronic typesetting, 
+             remaining essentially unchanged. It was popularised in the 1960s with the release of 
+             Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing 
+             software like Aldus PageMaker including versions of Lorem Ipsum.
+        </div>
+        <Button variant="contained" onClick={closeModalInfo}>Close</Button>
+      </Modal>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
         }}
-        open={open}
+        open={openModalImage}
         autoHideDuration={6000}
         onClose={handleClose}
         message="URL Copied."
@@ -327,7 +371,7 @@ function App() {
         }
       />
       <DataTable
-        title="Movie List"
+        title="Datasets"
         columns={columns}
         data={filteredData}
         defaultSortField="title"
@@ -363,7 +407,7 @@ function App() {
         paginationComponentOptions={paginationOptions}
         //fixedHeaderScrollHeight="300px"
         //direction={directionValue}
-        expandableRowsComponent={<Expansion snackBarHandle={handleClick} />}
+        expandableRowsComponent={<Expansion snackBarHandle={handleClick} moreInfoHandle={openModal} />}
       />
     </div>
   );
