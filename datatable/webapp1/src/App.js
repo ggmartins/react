@@ -167,16 +167,16 @@ class Expansion extends React.Component {
         <Card style={this.card1Style}>
           <CardContent>
               <ModalImage
-                small={this.data.refurls.primary[0].url+"poster20191017.jpg"}
-                large={this.data.refurls.primary[0].url+"poster20191017.jpg"}
+                small={this.data.images[0]}
+                large={this.data.images[0]}
                 hideDownload={true}
                 hideZoom={true}
               />
           </CardContent>
           <CardContent style={this.cardInfoStyle}>
-            <b>Name:</b> {this.data.title} <br />
-            <b>Description:</b> {this.data.description} <br />
-            <b>Key Words: {this.data.keywords} </b>
+            <b>Name:</b> <i>{this.data.title}</i> <br />
+            <b>Description:</b> <i>{this.data.description}</i> <br />
+            <b>Key Words: </b> <i>{this.data.keywords}</i>
           </CardContent>
         </Card>
         <Card style={this.card2Style}>
@@ -187,14 +187,14 @@ class Expansion extends React.Component {
                   <Table style={this.cardInfoStyle} size="small" aria-label="a dense table" >{/*size="small" aria-label="a dense table"*/}
                     <TableHead>
                     <TableRow>  
-                        <TableCell>
-                          Primary Location:
+                        <TableCell style={{ backgroundColor: 'lightgray'}}>
+                          <b>Information</b>
                         </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       <TableRow>  
-                          <TableCell > {/*component="th" scope="row" */}
+                          <TableCell> {/*component="th" scope="row" */}
                             <CardInfoLink>
                               <CopyToClipboard
                                 onCopy={(e)=>this.snackBarHandle(e)}
@@ -205,10 +205,49 @@ class Expansion extends React.Component {
                                 />
                               </CopyToClipboard>
                               <a href={this.data.refurls.primary[0].url}>
-                                {this.data.refurls.primary[0].url}
+                                  {this.data.refurls.primary[0].url}
                               </a>
                             </CardInfoLink>
                           </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>
+                        <CardInfoLink>
+                          <CopyToClipboard
+                                onCopy={(e)=>this.snackBarHandle(e)}
+                                text={this.data.sampledataurl}>
+                                <WeblinkIcon 
+                                  style={{ marginRight: '3px' , marginTop: '3px' }}
+                                  /*onClick={()=>{alert('test')}}*/
+                                />
+                          </CopyToClipboard>
+                          <a href={this.data.sampledataurl}><i>{this.data.sampledataurl}</i></a>
+                          <span style={{marginLeft: '6px'}}></span>(Data Sample)
+                          </CardInfoLink>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>
+                          <b>Size:</b> <i>{this.data.compressedsize},<span> </span>
+                          {this.data.uncompressedsize}</i> (uncompressed),<span> </span>
+                          <b>Formats:</b> <i>{this.data.formats}</i>.
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>
+                          <b>Interval:</b> <i>From {this.data.datestart} to {this.data.dateend}
+                          {this.data.dateapprox?' (approximately)':''}.</i>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>
+                          <b>Contact:</b> <i>{this.data.contact}</i>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell> {/*style={{border: '1px solid black'}}*/}
+                          <Button variant="contained" onClick={()=>alert('TBD')}>More Info</Button>
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
