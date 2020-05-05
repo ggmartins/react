@@ -13,7 +13,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
+//import TableHead from '@material-ui/core/TableHead';
 import Paper from '@material-ui/core/Paper';
 //import LinkIcon from '@material-ui/icons/Link';
 import SvgIcon from '@material-ui/core/SvgIcon';
@@ -25,7 +25,8 @@ import Button from '@material-ui/core/Button';
 import DataTable from 'react-data-table-component';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import ModalImage from 'react-modal-image';
-import Modal from 'react-modal';
+import 'react-responsive-modal/styles.css';
+import { Modal } from 'react-responsive-modal';
 
 import styled from 'styled-components';
 import data from './Datasets.js';
@@ -101,14 +102,14 @@ const ExpansionStyle = styled.div`
   }
 `;
 
-const CardInfoStyle = styled.div`
+/*const CardInfoStyle = styled.div`
   padding: 16px;
   display: flex;
   flex-direction: row;
   justify-content: left;
   width: 100%;
   margin: 0;
-`;
+`;*/
 
 function WeblinkIcon(props) {
   return (
@@ -151,12 +152,13 @@ class Expansion extends React.Component {
   };
   
   card2Style = {
+    fontSize: "14px !important",
     marginLeft: 10,
     width: '100%'
   };
   
   cardInfoStyle = {
-    fontSize: 14,
+    fontSize: "14px !important",
     textAlign: 'left',
   };
 
@@ -178,19 +180,20 @@ class Expansion extends React.Component {
             <b>Key Words: </b> <i>{this.data.keywords}</i>
           </CardContent>
         </Card>
-        <Card style={this.card2Style}>
+        {/*<Card style={this.card2Style}>
           <CardContent>
-            <CardInfoStyle>
+            <CardInfoStyle>*/}
               <div>
-                <TableContainer component={Paper}>
-                  <Table style={this.cardInfoStyle} size="small" aria-label="a dense table" >{/*size="small" aria-label="a dense table"*/}
-                    <TableHead>
+                <TableContainer style={this.card2Style} component={Paper}> {/*component={Paper}*/}
+                  <Table style={this.cardInfoStyle} size="small" aria-label="a dense table" >
+                    {/*size="small" aria-label="a dense table"*/}
+                    {/*<TableHead>
                     <TableRow>  
                         <TableCell style={{ backgroundColor: 'lightgray'}}>
                           <b>Information</b>
                         </TableCell>
                       </TableRow>
-                    </TableHead>
+                    </TableHead>*/}
                     <TableBody>
                       <TableRow>  
                           <TableCell> {/*component="th" scope="row" */}
@@ -251,10 +254,16 @@ class Expansion extends React.Component {
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <Modal
+                  open={this.open}
+                  onClose={this.onCloseModal} 
+                >
+                <div>dssdfsf</div>
+                </Modal>
               </div>
-            </CardInfoStyle>
+            {/*</CardInfoStyle>
           </CardContent>
-        </Card>
+        </Card>*/}
       </ExpansionStyle>
     );//return
   }//render
@@ -283,20 +292,6 @@ const FilterField = ({ filterText, onFilter, onClear }) => (
   </>
 );
 
-const customStyles = {
-  content : {
-    top                   : '50%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)'
-  }
-};
-
-
-Modal.setAppElement('#root')
-
 function App() {
   const [openModalImage, setOpenModalImage] = React.useState(false);
   const [openModalInfo, setOpenModalInfo] = React.useState(false);
@@ -308,6 +303,7 @@ function App() {
                                         )
                                   );
 
+  const myRef = React.useRef()
 
   const handleClick = () => {
     setOpenModalImage(true);
@@ -317,7 +313,6 @@ function App() {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpenModalImage(false);
   };
 
@@ -334,25 +329,21 @@ function App() {
     setOpenModalInfo(false);
   }
 
+  const moreInfoStyles = {
+    content : {
+      //top                   : '50%',
+      //left                  : '50%',
+      //right                 : 'auto',
+      //bottom                : 'auto',
+      //marginRight           : '-50%',
+      //transform             : 'translate(-50%, -50%)'
+      //marginRight           : '-50%',
+      maxWidth: "120px",
+    }
+  };
+
   return (
     <div className="App">
-      <Modal
-        isOpen={openModalInfo}
-        onAfterOpen={afterOpenModalInfo}
-        onRequestClose={closeModalInfo}
-        style={customStyles}
-        contentLabel="Example Modal"
-      > 
-        <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
-             when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
-             It has survived not only five centuries, but also the leap into electronic typesetting, 
-             remaining essentially unchanged. It was popularised in the 1960s with the release of 
-             Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing 
-             software like Aldus PageMaker including versions of Lorem Ipsum.
-        </div>
-        <Button variant="contained" onClick={closeModalInfo}>Close</Button>
-      </Modal>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
@@ -407,8 +398,21 @@ function App() {
         paginationComponentOptions={paginationOptions}
         //fixedHeaderScrollHeight="300px"
         //direction={directionValue}
-        expandableRowsComponent={<Expansion snackBarHandle={handleClick} moreInfoHandle={openModal} />}
+        expandableRowsComponent={<Expansion 
+            snackBarHandle={handleClick}
+            moreInfoHandle={openModal} 
+          />}
       />
+      <Modal
+        open={openModalInfo}
+        onClose={closeModalInfo}
+        style={moreInfoStyles}
+        //contentLabel="More Information"
+        center
+      > 
+        <div></div>
+        <Button variant="contained" onClick={closeModalInfo}>Close</Button>
+      </Modal>
     </div>
   );
 }
