@@ -249,7 +249,7 @@ class Expansion extends React.Component {
                       </TableRow>
                       <TableRow>
                         <TableCell> {/*style={{border: '1px solid black'}}*/}
-                          <Button variant="contained" onClick={this.moreInfoHandle}>More Info</Button>
+                          <Button variant="contained" onClick={() => this.moreInfoHandle(this.data.refurls)}>More Info</Button>
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -336,27 +336,35 @@ class RefURLs extends React.Component {
     }
   })
 
+  setTags(rec, tags) {
+    var dict = {}
+    this.setState({...this.state, isFetching: true});
+    try{
+      fetch(rec.url)
+        .then(response => response.text())
+        .then(result => parse(result))
+        .then(result => {
+          dict[rec.url] = {}
+          this.extractMetaTags(rec.url, result, dict)
+          return dict
+        }).then((d)=>{
+          this.setState({tags: tags.concat(d)})
+        }).catch(e => {
+          console.log(e);
+          this.setState({...this.state, isFetching: false});
+        });    
+    } catch(error) { console.log(error) }     
+  }
+
+  //TODO: this assumes cors enabled / Access-Control-Allow-Origin: *
   initUrls(urls){
     this.setState({ urls : urls })
     var tags = this.state.tags
-    this.state.urls.forEach((url) => {
-      var dict = {}
-      this.setState({...this.state, isFetching: true});
-      try{
-        fetch(url)
-          .then(response => response.text())
-          .then(result => parse(result))
-          .then(result => {
-            dict[url] = {}
-            this.extractMetaTags(url, result, dict)
-            return dict
-          }).then((d)=>{
-            this.setState({tags: tags.concat(d)})
-          }).catch(e => {
-            console.log(e);
-            this.setState({...this.state, isFetching: false});
-          });    
-      } catch(error) { console.log(error) }      
+    this.state.urls.primary.forEach((rec) => {
+      this.setTags(rec, tags)  
+    });
+    this.state.urls.secondary.forEach((rec) => {
+      this.setTags(rec, tags)
     });
   }
   render () {
@@ -367,6 +375,7 @@ class RefURLs extends React.Component {
 }
 
 function App() {
+  const [refurls, setRefURLs] = React.useState('');
   const [openModalImage, setOpenModalImage] = React.useState(false);
   const [openModalInfo, setOpenModalInfo] = React.useState(false);
   const [filterText, setFilterText] = React.useState('');
@@ -390,14 +399,10 @@ function App() {
     setOpenModalImage(false);
   };
 
-  function openModal() {
+  function openModal(refurls) {
+    setRefURLs(refurls)
     setOpenModalInfo(true);
   }
-
-  /*function afterOpenModalInfo() {
-    // references are now sync'd and can be accessed.
-    //subtitle.style.color = '#f00';
-  }*/
  
   function closeModalInfo(){
     setOpenModalInfo(false);
@@ -485,7 +490,7 @@ function App() {
         center
       >
         <div>
-          <RefURLs urls={["http://localhost:3000/test/"]} />
+          <RefURLs urls={refurls} />
         </div>
         <Button variant="contained" onClick={closeModalInfo}>Close</Button>
       </Modal>
