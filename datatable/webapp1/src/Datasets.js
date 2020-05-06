@@ -22,7 +22,7 @@ export default [
           metatags: "auto"
         }
       ],
-      alternative: [
+      secondary: [
         {
           type: "link",
           title: "General Documention and Guidelines",

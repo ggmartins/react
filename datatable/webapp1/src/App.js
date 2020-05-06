@@ -27,7 +27,8 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import ModalImage from 'react-modal-image';
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
-
+import parse from 'html-react-parser';
+import traverse from 'react-traverse';
 import styled from 'styled-components';
 import data from './Datasets.js';
 
@@ -292,6 +293,79 @@ const FilterField = ({ filterText, onFilter, onClear }) => (
   </>
 );
 
+
+/*const extractMetaTags = (url, node, dict) => traverse(node, {
+  DOMElement(path) {
+    //alert('test3')
+    if(path.node.type === 'meta') {
+      //console.log(path.node.props.property)
+      //console.log(path.node.props.content)
+      if (path.node.props.property != undefined) {
+        var d = dict[url]
+        d[path.node.props.property] = path.node.props.content
+      }
+      //dict[url] = { d } 
+    }
+    path.traverseChildren()
+  }
+})*/
+
+class RefURLs extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isFetching : false,
+      urls : props.urls,
+      tags : [],
+    };
+  }
+  componentDidMount() {
+    this.initUrls(this.state.urls)
+  }
+
+  extractMetaTags = (url, node, dict) => traverse(node, {
+    DOMElement(path) {  
+      if(path.node.type === 'meta') {
+        if (path.node.props.property !== undefined) {
+          var d = dict[url]
+          d[path.node.props.property] = path.node.props.content
+        }
+        //dict[url] = { d } 
+      }
+      path.traverseChildren()
+    }
+  })
+
+  initUrls(urls){
+    this.setState({ urls : urls })
+    var tags = this.state.tags
+    this.state.urls.forEach((url) => {
+      var dict = {}
+      this.setState({...this.state, isFetching: true});
+      try{
+        fetch(url)
+          .then(response => response.text())
+          .then(result => parse(result))
+          .then(result => {
+            dict[url] = {}
+            this.extractMetaTags(url, result, dict)
+            return dict
+          }).then((d)=>{
+            this.setState({tags: tags.concat(d)})
+          }).catch(e => {
+            console.log(e);
+            this.setState({...this.state, isFetching: false});
+          });    
+      } catch(error) { console.log(error) }      
+    });
+  }
+  render () {
+    return (
+    <div>{JSON.stringify(this.state.tags)}</div>
+    )
+  }
+}
+
 function App() {
   const [openModalImage, setOpenModalImage] = React.useState(false);
   const [openModalInfo, setOpenModalInfo] = React.useState(false);
@@ -303,7 +377,7 @@ function App() {
                                         )
                                   );
 
-  const myRef = React.useRef()
+  //const myRef = React.useRef()
 
   const handleClick = () => {
     setOpenModalImage(true);
@@ -320,10 +394,10 @@ function App() {
     setOpenModalInfo(true);
   }
 
-  function afterOpenModalInfo() {
+  /*function afterOpenModalInfo() {
     // references are now sync'd and can be accessed.
     //subtitle.style.color = '#f00';
-  }
+  }*/
  
   function closeModalInfo(){
     setOpenModalInfo(false);
@@ -338,7 +412,7 @@ function App() {
       //marginRight           : '-50%',
       //transform             : 'translate(-50%, -50%)'
       //marginRight           : '-50%',
-      maxWidth: "120px",
+      //maxWidth: "120px",
     }
   };
 
@@ -409,8 +483,10 @@ function App() {
         style={moreInfoStyles}
         //contentLabel="More Information"
         center
-      > 
-        <div></div>
+      >
+        <div>
+          <RefURLs urls={["http://localhost:3000/test/"]} />
+        </div>
         <Button variant="contained" onClick={closeModalInfo}>Close</Button>
       </Modal>
     </div>
