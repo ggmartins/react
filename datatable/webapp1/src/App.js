@@ -29,8 +29,10 @@ import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 import parse from 'html-react-parser';
 import traverse from 'react-traverse';
+import Img from 'react-image'
 import styled from 'styled-components';
 import data from './Datasets.js';
+import { TableHead } from '@material-ui/core';
 
 
 const columns = [
@@ -186,7 +188,7 @@ class Expansion extends React.Component {
             <CardInfoStyle>*/}
               <div>
                 <TableContainer style={this.card2Style} component={Paper}> {/*component={Paper}*/}
-                  <Table style={this.cardInfoStyle} size="small" aria-label="a dense table" >
+                  <Table style={this.cardInfoStyle} size="small">
                     {/*size="small" aria-label="a dense table"*/}
                     {/*<TableHead>
                     <TableRow>  
@@ -255,12 +257,12 @@ class Expansion extends React.Component {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                <Modal
+                {/*<Modal
                   open={this.open}
                   onClose={this.onCloseModal} 
                 >
                 <div>dssdfsf</div>
-                </Modal>
+                </Modal>*/}
               </div>
             {/*</CardInfoStyle>
           </CardContent>
@@ -337,39 +339,146 @@ class RefURLs extends React.Component {
   })
 
   setTags(rec, tags) {
-    var dict = {}
+    var dict = {} //TODO: fix is Fetching
     this.setState({...this.state, isFetching: true});
     try{
       fetch(rec.url)
         .then(response => response.text())
         .then(result => parse(result))
         .then(result => {
-          dict[rec.url] = {}
+          dict[rec.url] = { rec: rec }
           this.extractMetaTags(rec.url, result, dict)
           return dict
         }).then((d)=>{
           this.setState({tags: tags.concat(d)})
+          this.setState({...this.state, isFetching: false}); //TODO: fix isFetching
         }).catch(e => {
-          console.log(e);
+          console.log(e);  
           this.setState({...this.state, isFetching: false});
         });    
-    } catch(error) { console.log(error) }     
+    } catch(error) { console.log(error) }
   }
 
   //TODO: this assumes cors enabled / Access-Control-Allow-Origin: *
   initUrls(urls){
     this.setState({ urls : urls })
     var tags = this.state.tags
-    this.state.urls.primary.forEach((rec) => {
+    this.state.urls.primary.forEach((rec) => { //foreach record
       this.setTags(rec, tags)  
     });
-    this.state.urls.secondary.forEach((rec) => {
-      this.setTags(rec, tags)
-    });
+
+    if (this.state.urls.secondary !== undefined) {
+        this.state.urls.secondary.forEach((rec) => {
+        this.setTags(rec, tags)
+      });
+    }
   }
-  render () {
+
+  getTableScrollHead(title, k) {
     return (
-    <div>{JSON.stringify(this.state.tags)}</div>
+      <TableHead key={("h_"+k)} style={{backgroundColor: "lightgray"}}>
+        <TableRow key={("h_"+k)}>
+            <TableCell key={("h_"+k)}>
+            {title}
+            </TableCell>          
+        </TableRow>                        
+      </TableHead>
+    );
+  }
+
+  
+  getTableScrollRow(e0, e1, isImage) {
+    return (
+      <TableRow key={("r_"+e0)}>
+        <TableCell key={("r_"+e0)}>
+             {isImage?(()=>{
+               return (
+                <Img src={e1} style={{maxWidth: 500}}></Img> //TODO magic style numbers
+               )
+             })():e1}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  getTableScrollBody(o) {
+    /* (o.rec.metatags === 'auto')?
+            Object.entries(o).map(e => this.getTableScrollRowAuto(e)):
+            (((o.rec.metatags === 'yes')||(o.rec.metatags === 'enable'))?
+    this.getTableScrollRowYes(o):this.getTableScrollRowNo(o))  */
+    var tags_og = ['og:title', 'og:description', 'og:url', 'og:image']
+    var tags_tt = ['twitter:title', 'twitter:description', 'twitter:url', 'twitter:image']
+    return (
+      <TableBody key={("b_"+o.rec.url)}>
+        
+        {(()=>{ 
+          //console.log(o)
+          var tags
+          if (typeof o['og:url'] === "string")
+            tags=tags_og
+          else if (typeof o['twitter:url'] === "string")
+            tags=tags_tt
+          else
+            tags=null
+
+          if (o.rec.metatags === 'auto') {
+            if (tags) {
+              return Object.entries(o).map(e => {
+                //console.log(e[0])
+                if (tags.includes(e[0]) && typeof e[1] === 'string') {
+                  //console.log(e[1])
+                  return this.getTableScrollRow(e[0], e[1], e[0].includes("image"))
+                }
+                return null
+              })  
+            } else {
+              //TBD
+            }
+          } else if ( (o.rec.metatags === 'yes')||
+                      (o.rec.metatags === 'enable')) {
+
+          } else {
+
+          }
+        })()}
+      </TableBody>
+    );
+  }
+  //Object.entries(o).map((e) => {console.log(e); })
+
+  render () {
+    //{/*<div>{JSON.stringify(this.state.tags)}</div>*/}
+    //https://stackoverflow.com/questions/35136836/react-component-render-is-called-multiple-times-when-pushing-new-url
+    return (
+         <div>
+            {
+              this.state.tags.map((tag, i) => {
+                //console.log("here")//console.log(tag)
+              var o = tag[Object.keys(tag)[0]]
+              //console.log(o)
+                return(
+                  <TableContainer 
+                    component={Paper}
+                    key={("hb"+i)}
+                    style={{ maxWidth: 560, marginTop: 20, marginBottom: 5 }}
+                  > 
+                    <Table size="small" key={("hb_"+o.rec.url)}>
+                      {this.getTableScrollHead(o.rec.note, o.rec.url)}
+                      {this.getTableScrollBody(o)}
+                      {/*<TableBody key={("b_"+o.rec.url)}>
+                        <TableRow key={("b"+i)}>
+                            <TableCell key={("b"+i)}>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            </TableCell>          
+                        </TableRow>
+                </TableBody>*/}
+                    </Table>
+                  </TableContainer>
+                );
+              //return (<li key={i}>{o.rec.metatags}</li>);
+              })
+            }
+         </div>
     )
   }
 }
@@ -489,9 +598,7 @@ function App() {
         //contentLabel="More Information"
         center
       >
-        <div>
-          <RefURLs urls={refurls} />
-        </div>
+        <RefURLs urls={refurls} />
         <Button variant="contained" onClick={closeModalInfo}>Close</Button>
       </Modal>
     </div>
