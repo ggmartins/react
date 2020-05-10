@@ -29,11 +29,9 @@ import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 import parse from 'html-react-parser';
 import traverse from 'react-traverse';
-import Img from 'react-image'
 import styled from 'styled-components';
 import data from './Datasets.js';
 import { TableHead } from '@material-ui/core';
-
 
 const columns = [
   {
@@ -296,21 +294,6 @@ const FilterField = ({ filterText, onFilter, onClear }) => (
 );
 
 
-/*const extractMetaTags = (url, node, dict) => traverse(node, {
-  DOMElement(path) {
-    //alert('test3')
-    if(path.node.type === 'meta') {
-      //console.log(path.node.props.property)
-      //console.log(path.node.props.content)
-      if (path.node.props.property != undefined) {
-        var d = dict[url]
-        d[path.node.props.property] = path.node.props.content
-      }
-      //dict[url] = { d } 
-    }
-    path.traverseChildren()
-  }
-})*/
 
 class RefURLs extends React.Component {
   constructor(props) {
@@ -319,81 +302,104 @@ class RefURLs extends React.Component {
       isFetching : false,
       urls : props.urls,
       tags : [],
+      upds : [],
+      r:'',
     };
   }
+
   componentDidMount() {
-    this.initUrls(this.state.urls)
+    console.log("componentDidMount")
+    this.initUrls(this.props.urls)
+    //console.log("componentDidMount: " + this.state.tags + " ***")
+    /*try{
+      fetch("http://localhost:3000/test/")
+          .then(response => response.text())
+          .then(r=> {
+              this.setState({r: r})
+          })
+          .catch(e => console.log(e))
+    } catch(error) {console.log(error)}*/
   }
 
-  extractMetaTags = (url, node, dict) => traverse(node, {
+  static getDerivedStateFromProps(props, state) {
+    console.log('getDerivedStateFromProps')
+    return state
+  } 
+
+  componentWillUnmount() {
+    console.log("componentWillUnmount")
+  }
+  componentDidUpdate () {
+    console.log("componentDidUpdate")
+  }
+
+  extractMetaTags = (node, d) => traverse(node, {
     DOMElement(path) {  
       if(path.node.type === 'meta') {
         if (path.node.props.property !== undefined) {
-          var d = dict[url]
           d[path.node.props.property] = path.node.props.content
         }
-        //dict[url] = { d } 
       }
       path.traverseChildren()
     }
   })
-
-  setTags(rec, tags) {
-    var dict = {} //TODO: fix is Fetching
-    this.setState({...this.state, isFetching: true});
+  
+  fetchTags(rec) {
+    console.log("fetchTags")
     try{
-      fetch(rec.url)
+      fetch(rec.url, {mode: 'cors'}) //, {headers: {mode: 'no-cors'} }
         .then(response => response.text())
         .then(result => parse(result))
         .then(result => {
+          var dict = {}
           dict[rec.url] = { rec: rec }
-          this.extractMetaTags(rec.url, result, dict)
+          this.extractMetaTags(result, dict[rec.url])
           return dict
         }).then((d)=>{
-          this.setState({tags: tags.concat(d)})
-          this.setState({...this.state, isFetching: false}); //TODO: fix isFetching
+          console.log(d)
+          this.setState({tags: this.state.tags.concat(d)})
         }).catch(e => {
           console.log(e);  
-          this.setState({...this.state, isFetching: false});
         });    
     } catch(error) { console.log(error) }
   }
 
   //TODO: this assumes cors enabled / Access-Control-Allow-Origin: *
-  initUrls(urls){
-    this.setState({ urls : urls })
-    var tags = this.state.tags
+  async initUrls(urls){
+    console.log("initUrls")
     this.state.urls.primary.forEach((rec) => { //foreach record
-      this.setTags(rec, tags)  
+      //console.log(rec)
+      this.fetchTags(rec)  
     });
 
     if (this.state.urls.secondary !== undefined) {
         this.state.urls.secondary.forEach((rec) => {
-        this.setTags(rec, tags)
+        console.log(rec)
+        this.fetchTags(rec)
       });
     }
   }
 
-  getTableScrollHead(title, k) {
+  getTableScrollHead(i, title, k) {
     return (
-      <TableHead key={("h_"+k)} style={{backgroundColor: "lightgray"}}>
-        <TableRow key={("h_"+k)}>
-            <TableCell key={("h_"+k)}>
+      <TableHead key={("h_"+k+"_"+i)} style={{backgroundColor: "lightgray"}}>
+        <TableRow key={("h_"+k)+"_"+i}>
+            <TableCell key={("h_"+k+"_"+i)}>
             {title}
             </TableCell>          
         </TableRow>                        
       </TableHead>
     );
   }
-
   
-  getTableScrollRow(e0, e1, isImage) {
+  getTableScrollRow(i, j, e1, isImage) {
+    //<Img src={e1} sty le={{maxWidth: 500}}></Img> //TODO magic style numbers
     return (
-      <TableRow key={("r_"+e0)}>
-        <TableCell key={("r_"+e0)}>
+      <TableRow key={("r_"+j+"_"+i)}>
+        <TableCell key={("r_"+j+"_"+i)}>
              {isImage?(()=>{
                return (
-                <Img src={e1} style={{maxWidth: 500}}></Img> //TODO magic style numbers
+                <img src={e1} alt={e1} style={{maxWidth: 500}} crossOrigin={''} />
                )
              })():e1}
         </TableCell>
@@ -401,16 +407,11 @@ class RefURLs extends React.Component {
     );
   }
 
-  getTableScrollBody(o) {
-    /* (o.rec.metatags === 'auto')?
-            Object.entries(o).map(e => this.getTableScrollRowAuto(e)):
-            (((o.rec.metatags === 'yes')||(o.rec.metatags === 'enable'))?
-    this.getTableScrollRowYes(o):this.getTableScrollRowNo(o))  */
+  getTableScrollBody(i, o) {
     var tags_og = ['og:title', 'og:description', 'og:url', 'og:image']
     var tags_tt = ['twitter:title', 'twitter:description', 'twitter:url', 'twitter:image']
     return (
-      <TableBody key={("b_"+o.rec.url)}>
-        
+      <TableBody key={("b"+i)}> 
         {(()=>{ 
           //console.log(o)
           var tags
@@ -423,11 +424,11 @@ class RefURLs extends React.Component {
 
           if (o.rec.metatags === 'auto') {
             if (tags) {
-              return Object.entries(o).map(e => {
+              return Object.entries(o).map((e, j) => {
                 //console.log(e[0])
                 if (tags.includes(e[0]) && typeof e[1] === 'string') {
                   //console.log(e[1])
-                  return this.getTableScrollRow(e[0], e[1], e[0].includes("image"))
+                  return this.getTableScrollRow(i, j, e[1], e[0].includes("image"))
                 }
                 return null
               })  
@@ -453,35 +454,26 @@ class RefURLs extends React.Component {
          <div>
             {
               this.state.tags.map((tag, i) => {
-                //console.log("here")//console.log(tag)
               var o = tag[Object.keys(tag)[0]]
-              //console.log(o)
-                return(
+              return(
                   <TableContainer 
                     component={Paper}
                     key={("hb"+i)}
                     style={{ maxWidth: 560, marginTop: 20, marginBottom: 5 }}
                   > 
-                    <Table size="small" key={("hb_"+o.rec.url)}>
-                      {this.getTableScrollHead(o.rec.note, o.rec.url)}
-                      {this.getTableScrollBody(o)}
-                      {/*<TableBody key={("b_"+o.rec.url)}>
-                        <TableRow key={("b"+i)}>
-                            <TableCell key={("b"+i)}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </TableCell>          
-                        </TableRow>
-                </TableBody>*/}
+                    <Table size="small" key={("hb_"+o.rec.url+"_"+i)}>
+                      {this.getTableScrollHead(i, o.rec.note, o.rec.url)}
+                      {this.getTableScrollBody(i, o)}
                     </Table>
                   </TableContainer>
                 );
-              //return (<li key={i}>{o.rec.metatags}</li>);
               })
             }
          </div>
     )
   }
 }
+
 
 function App() {
   const [refurls, setRefURLs] = React.useState('');

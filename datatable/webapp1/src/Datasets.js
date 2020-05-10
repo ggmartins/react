@@ -2,7 +2,7 @@ export default [
   {
     id: 1,
     title: 'Project BISmark',
-    keywords: 'bismark, throughput, broadband, computer networks, speedtest, noiselab',
+    keywords: 'bismark, throughput, broadband, computer networks, speedtest, traceroute, noiselab',
     formats: 'csv, psql',
     shortdesc: 'Broadband Internet Service Benchmark Dataset Collection',
     compressedsize: '8GB',
@@ -18,19 +18,21 @@ export default [
       primary: [
         {
           note: "Primary Location",
-          _url: "http://projectbismark.net.s3-website.us-east-2.amazonaws.com/",
-          url: "http://localhost:3000/test/",
-          metatags: "auto"
+          url: "http://projectbismark.net",
+          metatags_url: "http://projectbismark.net",
+          metatags_title: "Broadband Internet Service Benchmark",
+          metatags_description: "Project BISmark is an open source, open data, neutral platform for active internet performance monitoring",
+          metatags_image: "http://projectbismark.net.s3-website.us-east-2.amazonaws.com/poster20191017.jpg",
         }
       ],
-      secondary_: [
+      secondary: [
         {
           type: "link",
           title: "General Documention and Guidelines",
           url: "https://github.com/projectbismark",
           metatags: "auto"
         },
-        {
+        /*{
           type: "link",
           title: "Alternative Data Location (UChicago)",
           url: "border.cs.uchicago.edu:/mnt/gmartins/bismark",
@@ -85,7 +87,7 @@ export default [
           publisher : 'ACM DEV',
           locdate : 'Cape Town, South Africa. December 2013',
           url: 'http://www1.icsi.berkeley.edu/~srikanth/docs/broadband-sa-dev4.pdf'
-        }
+        }*/
       ]
     },
   }

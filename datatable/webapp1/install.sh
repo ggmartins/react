@@ -7,4 +7,3 @@ npm i react-modal-image
 npm i react-responsive-modal
 npm i html-react-parser
 npm i react-traverse
-npm i react-image
