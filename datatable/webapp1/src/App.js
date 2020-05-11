@@ -331,41 +331,22 @@ class RefURLs extends React.Component {
   componentDidUpdate () {
     console.log("componentDidUpdate")
   }
-
-  /*extractMetaTags = (node, d) => traverse(node, {
-    DOMElement(path) {  
-      if(path.node.type === 'meta') {
-        if (path.node.props.property !== undefined) {
-          d[path.node.props.property] = path.node.props.content
-        }
-      }
-      path.traverseChildren()
-    }
-  })*/
   
   fetchTags(rec) {
-    /*try{
-      fetch(rec.url, {mode: 'cors'}) //, {headers: {mode: 'no-cors'} }
-        .then(response => response.text())
-        .then(result => parse(result))
-        .then(result => {
-          var dict = {}
-          dict[rec.url] = { rec: rec }
-          this.extractMetaTags(result, dict[rec.url])
-          return dict
-        }).then((d)=>{
-          console.log(d)
-          this.setState({tags: this.state.tags.concat(d)})
-        }).catch(e => {
-          console.log(e);  
-        });    
-    } catch(error) { console.log(error) }*/
-
     var dict = {}
     dict.rec = rec
+    dict.title = ''
     dict.url = rec.url
+    if (rec.authors)
+      dict.authors = rec.authors
+    if (rec.publisher)
+      dict.publisher = rec.publisher
+    if (rec.locdate)
+      dict.locdate = rec.locdate
     if (rec.metatags_enable) {
       console.log("fetchTags W metatags")
+      dict.title = rec.metatags_title
+      dict.description = rec.description
       dict.metatags_url = rec.metatags_url
       dict.metatags_title = rec.metatags_title
       dict.metatags_description = rec.metatags_description
@@ -375,12 +356,13 @@ class RefURLs extends React.Component {
     }
     else {
       console.log("fetchTags NO metatags")
+      dict.title = rec.title
+      dict.description = rec.description
       if (dict.description === undefined)
          dict.description = ''
       if (dict.image === undefined)
          dict.image = ''
     }
-    //this.setState({tags: this.state.tags.concat(dict)})
     return dict
   }
 
@@ -395,12 +377,12 @@ class RefURLs extends React.Component {
     }).catch(e=>console.log(e))
   }
 
-  getTableScrollHead(i, title, k) {
+  getTableScrollHead(i, type, k) {
     return (
       <TableHead key={("h_"+k+"_"+i)} style={{backgroundColor: "lightgray"}}>
         <TableRow key={("h_"+k)+"_"+i}>
             <TableCell key={("h_"+k+"_"+i)}>
-            {title}
+            {type}
             </TableCell>          
         </TableRow>                        
       </TableHead>
@@ -423,43 +405,24 @@ class RefURLs extends React.Component {
   }
 
   getTableScrollBody(i, o) {
-    //var tags_og = ['og:title', 'og:description', 'og:url', 'og:image']
-    //var tags_tt = ['twitter:title', 'twitter:description', 'twitter:url', 'twitter:image']
-    var tags_std = ['title', 'description', 'url', 'image']
+    var tags = ['title', "authors", 'publisher', 'locdate', 'description', 'url', 'image']
     return (
       <TableBody key={("b"+i)}> 
-        {(()=>{ 
-          //console.log(o)
-          var tags = tags_std
-          /*if (typeof o['og:url'] === "string")
-            tags=tags_og
-          else if (typeof o['twitter:url'] === "string")
-            tags=tags_tt
-          else
-            tags=null*/
-
-          if (o.rec.metatags_enable) {
-            if (tags) {
-              return Object.entries(o).map((e, j) => {
-                //console.log(e[0])
-                if (tags.includes(e[0]) && typeof e[1] === 'string') {
-                  //console.log(e[1])
-                  return this.getTableScrollRow(i, j, e[1], e[0].includes("image"))
-                }
-                return null
-              })  
+        {(()=>{
+          return Object.entries(o).map((e, j) => {
+            //console.log(e[0])
+            if (tags.includes(e[0]) && typeof e[1] === 'string' && e[1] !== '') {
+              console.log(e[1])
+              return this.getTableScrollRow(i, j, e[1], e[0].includes("image"))
             } else {
-              //TBD
+              console.log("getTableScrollBody skipping " + e[0] + " with " + e[1])
             }
-          } else {
-            console.log('getTableScrollBody: metatags_enable false')
-          }
+            return null
+          })
         })()}
       </TableBody>
     );
   }
-  //Object.entries(o).map((e) => {console.log(e); })
-
   render () {
     //{/*<div>{JSON.stringify(this.state.tags)}</div>*/}
     //https://stackoverflow.com/questions/35136836/react-component-render-is-called-multiple-times-when-pushing-new-url
@@ -468,7 +431,6 @@ class RefURLs extends React.Component {
             {
               this.state.tags.map((tag, i) => {
               var o = tag
-              console.log("i:" + i + " -- " + JSON.stringify(o))
               return(
                   <TableContainer 
                     component={Paper}
@@ -476,7 +438,7 @@ class RefURLs extends React.Component {
                     style={{ maxWidth: 560, marginTop: 20, marginBottom: 5 }}
                   > 
                     <Table size="small" key={("hb_"+o.rec.url+"_"+i)}>
-                      {this.getTableScrollHead(i, o.rec.title, o.rec.url)}
+                      {this.getTableScrollHead(i, o.rec.type, o.rec.url)}
                       {this.getTableScrollBody(i, o)}
                     </Table>
                   </TableContainer>
@@ -502,7 +464,6 @@ function App() {
                                   );
 
   //const myRef = React.useRef()
-
   const handleClick = () => {
     setOpenModalImage(true);
   };
