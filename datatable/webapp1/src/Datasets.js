@@ -17,8 +17,9 @@ export default [
     refurls:{
       primary: [
         {
-          note: "Primary Location",
+          title: "Primary Location",
           url: "http://projectbismark.net",
+          metatags_enable: true,
           metatags_url: "http://projectbismark.net",
           metatags_title: "Broadband Internet Service Benchmark",
           metatags_description: "Project BISmark is an open source, open data, neutral platform for active internet performance monitoring",
@@ -30,7 +31,11 @@ export default [
           type: "link",
           title: "General Documention and Guidelines",
           url: "https://github.com/projectbismark",
-          metatags: "auto"
+          metatags_enable: true,
+          metatags_url: "https://github.com/projectbismark",
+          metatags_title: "projectbismark · GitHub",
+          metatags_description: "Projectbismark has 21 repositories available. Follow their code on GitHub.",
+          metatags_image: "https://avatars0.githubusercontent.com/u/1072883?s=280&v=4",
         },
         /*{
           type: "link",

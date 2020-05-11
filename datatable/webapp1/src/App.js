@@ -27,8 +27,8 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import ModalImage from 'react-modal-image';
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
-import parse from 'html-react-parser';
-import traverse from 'react-traverse';
+//import parse from 'html-react-parser';
+//import traverse from 'react-traverse';
 import styled from 'styled-components';
 import data from './Datasets.js';
 import { TableHead } from '@material-ui/core';
@@ -302,14 +302,13 @@ class RefURLs extends React.Component {
       isFetching : false,
       urls : props.urls,
       tags : [],
-      upds : [],
-      r:'',
     };
   }
 
   componentDidMount() {
     console.log("componentDidMount")
-    this.initUrls(this.props.urls)
+
+    this.initUrls()
     //console.log("componentDidMount: " + this.state.tags + " ***")
     /*try{
       fetch("http://localhost:3000/test/")
@@ -333,7 +332,7 @@ class RefURLs extends React.Component {
     console.log("componentDidUpdate")
   }
 
-  extractMetaTags = (node, d) => traverse(node, {
+  /*extractMetaTags = (node, d) => traverse(node, {
     DOMElement(path) {  
       if(path.node.type === 'meta') {
         if (path.node.props.property !== undefined) {
@@ -342,11 +341,10 @@ class RefURLs extends React.Component {
       }
       path.traverseChildren()
     }
-  })
+  })*/
   
   fetchTags(rec) {
-    console.log("fetchTags")
-    try{
+    /*try{
       fetch(rec.url, {mode: 'cors'}) //, {headers: {mode: 'no-cors'} }
         .then(response => response.text())
         .then(result => parse(result))
@@ -361,23 +359,40 @@ class RefURLs extends React.Component {
         }).catch(e => {
           console.log(e);  
         });    
-    } catch(error) { console.log(error) }
+    } catch(error) { console.log(error) }*/
+
+    var dict = {}
+    dict.rec = rec
+    dict.url = rec.url
+    if (rec.metatags_enable) {
+      console.log("fetchTags W metatags")
+      dict.metatags_url = rec.metatags_url
+      dict.metatags_title = rec.metatags_title
+      dict.metatags_description = rec.metatags_description
+      dict.metatags_image = rec.metatags_image
+      dict.description = rec.metatags_description
+      dict.image = rec.metatags_image
+    }
+    else {
+      console.log("fetchTags NO metatags")
+      if (dict.description === undefined)
+         dict.description = ''
+      if (dict.image === undefined)
+         dict.image = ''
+    }
+    //this.setState({tags: this.state.tags.concat(dict)})
+    return dict
   }
 
   //TODO: this assumes cors enabled / Access-Control-Allow-Origin: *
-  async initUrls(urls){
+  async initUrls(){
     console.log("initUrls")
-    this.state.urls.primary.forEach((rec) => { //foreach record
-      //console.log(rec)
-      this.fetchTags(rec)  
-    });
-
-    if (this.state.urls.secondary !== undefined) {
-        this.state.urls.secondary.forEach((rec) => {
-        console.log(rec)
-        this.fetchTags(rec)
-      });
-    }
+    Promise.all(this.state.urls.primary.map(this.fetchTags)).then(d => {
+      this.setState({tags: this.state.tags.concat(d)})
+      Promise.all(this.state.urls.secondary.map(this.fetchTags)).then(d => {
+        this.setState({tags: this.state.tags.concat(d)})
+      }).catch(e=>console.log(e))
+    }).catch(e=>console.log(e))
   }
 
   getTableScrollHead(i, title, k) {
@@ -408,21 +423,22 @@ class RefURLs extends React.Component {
   }
 
   getTableScrollBody(i, o) {
-    var tags_og = ['og:title', 'og:description', 'og:url', 'og:image']
-    var tags_tt = ['twitter:title', 'twitter:description', 'twitter:url', 'twitter:image']
+    //var tags_og = ['og:title', 'og:description', 'og:url', 'og:image']
+    //var tags_tt = ['twitter:title', 'twitter:description', 'twitter:url', 'twitter:image']
+    var tags_std = ['title', 'description', 'url', 'image']
     return (
       <TableBody key={("b"+i)}> 
         {(()=>{ 
           //console.log(o)
-          var tags
-          if (typeof o['og:url'] === "string")
+          var tags = tags_std
+          /*if (typeof o['og:url'] === "string")
             tags=tags_og
           else if (typeof o['twitter:url'] === "string")
             tags=tags_tt
           else
-            tags=null
+            tags=null*/
 
-          if (o.rec.metatags === 'auto') {
+          if (o.rec.metatags_enable) {
             if (tags) {
               return Object.entries(o).map((e, j) => {
                 //console.log(e[0])
@@ -435,11 +451,8 @@ class RefURLs extends React.Component {
             } else {
               //TBD
             }
-          } else if ( (o.rec.metatags === 'yes')||
-                      (o.rec.metatags === 'enable')) {
-
           } else {
-
+            console.log('getTableScrollBody: metatags_enable false')
           }
         })()}
       </TableBody>
@@ -454,7 +467,8 @@ class RefURLs extends React.Component {
          <div>
             {
               this.state.tags.map((tag, i) => {
-              var o = tag[Object.keys(tag)[0]]
+              var o = tag
+              console.log("i:" + i + " -- " + JSON.stringify(o))
               return(
                   <TableContainer 
                     component={Paper}
@@ -462,7 +476,7 @@ class RefURLs extends React.Component {
                     style={{ maxWidth: 560, marginTop: 20, marginBottom: 5 }}
                   > 
                     <Table size="small" key={("hb_"+o.rec.url+"_"+i)}>
-                      {this.getTableScrollHead(i, o.rec.note, o.rec.url)}
+                      {this.getTableScrollHead(i, o.rec.title, o.rec.url)}
                       {this.getTableScrollBody(i, o)}
                     </Table>
                   </TableContainer>
