@@ -2,7 +2,7 @@ export default [
   {
     id: 1,
     title: 'Project BISmark',
-    keywords: 'bismark, throughput, broadband, computer networks, speedtest, traceroute, noiselab',
+    keywords: 'bismark, throughput, broadband, computer networks, speedtest, traceroute, internet, performance',
     formats: 'csv, psql',
     shortdesc: 'Broadband Internet Service Benchmark Dataset Collection',
     compressedsize: '8GB',
@@ -44,6 +44,17 @@ export default [
           metatags_enable: false,
         },
         {
+          type: "Alternative Data Location (UChicago)",
+          title: "MySpeedTest Dataset",
+          description: "MySpeedTest Android App Source Code",
+          url: "https://github.com/noise-lab/MySpeedTest",
+          metatags_enable: true,
+          metatags_url: "https://github.com/noise-lab/MySpeedTest",
+          metatags_title: "GitHub - noise-lab/MySpeedTest",
+          metatags_description: "Contribute to noise-lab/MySpeedTest development by creating an account on GitHub.",
+          metatags_image: "https://avatars3.githubusercontent.com/u/5245387?s=400&v=4"
+        },
+        {
           type: "Media Coverage",
           title: "CDAC Blog Post",
           description: "Measuring the Effects of the COVID-19 Pandemic on Broadband Access Networks to Inform Robust Network Design | CDAC",
@@ -68,7 +79,7 @@ export default [
           metatags_url: "https://www.forbes.com/sites/roslynlayton/2019/08/31/the-agenda-behind-the-wsjs-truth-about-broadband-series/",
           metatags_title: "What's Driving The WSJ’s “Truth About Broadband” Series",
           metatags_description: "There is nothing like media sensation to drive a preferred policy outcome when mainstream regulatory analysis can't.",
-          metatags_image: "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fi.forbesimg.com%2Fmedia%2Famp%2Fimages%2Fforbes-logo-dark.png"
+          metatags_image: "https://cdac-misc.s3.us-east-2.amazonaws.com/images/aHR0cHM6Ly90aHVtYm9yLmZvcmJlcy5jb20vdGh1bWJvci9maXQtaW4vMTIwMHgwL2ZpbHRlcnMlM0Fmb3JtYXQlMjhqcGclMjkvaHR0cHMlM0ElMkYlMkZpLmZvcmJlc2ltZy5jb20lMkZtZWRpYSUyRmFtcCUyRmltYWdlcyUyRmZvcmJlcy1sb2dvLWRhcmsucG5n.png"
         },
         {
           type: "Publication",

@@ -72,6 +72,8 @@ const columns = [
 
 ];
 
+//const altURLbase = "https://.s3.us-east-2.amazonaws.com/images/"
+
 const paginationOptions = { rowsPerPage: 20 };
 
 /*const ClearButton = styled(Button)`
@@ -303,6 +305,7 @@ class RefURLs extends React.Component {
       urls : props.urls,
       tags : [],
     };
+    this.snackBarHandle = props.snackBarHandle.bind(this);
   }
 
   componentDidMount() {
@@ -388,38 +391,71 @@ class RefURLs extends React.Component {
       </TableHead>
     );
   }
-  
-  getTableScrollRow(i, j, e1, isImage) {
+  //TODO better var names
+  getTableScrollRow(i, j, e1, isURL) {
     //<Img src={e1} sty le={{maxWidth: 500}}></Img> //TODO magic style numbers
     return (
       <TableRow key={("r_"+j+"_"+i)}>
         <TableCell key={("r_"+j+"_"+i)}>
-             {isImage?(()=>{
-               return (
-                <img src={e1} alt={e1} style={{maxWidth: 500}} crossOrigin={''} />
+            {(isURL)?(()=>{
+              return (
+                  <div style={{display: 'flex', verticalAlign: 'middle'}}> 
+                    <CopyToClipboard
+                        onCopy={(e)=>this.snackBarHandle(e)}
+                        text={e1}
+                    >
+                        <WeblinkIcon style={{ marginRight: '3px', marginTop: '3px' }} />
+                    </CopyToClipboard>
+                    <a href={e1}>{e1}</a>
+                  </div>
+              )
+              })():e1}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  getTableScrollRowImageDesc(i, img, desc) {
+    return (
+      <TableRow key={("rf_"+i)}>
+        <TableCell key={("rf_"+i)}>
+             {(()=>{
+               return ( //TODO get rid of magic numbers
+                <div>
+                  <img 
+                    src={img}  //TODO check image in
+                    alt={desc} //TODO alt
+                    style={{maxWidth: 500, maxHeight: 100, float: "left", marginRight: 10}} 
+                    crossOrigin={''} 
+                  />
+                  <p style={{marginLeft: 10}}>{desc}</p>
+                </div>
                )
-             })():e1}
+             })()}
         </TableCell>
       </TableRow>
     );
   }
 
   getTableScrollBody(i, o) {
-    var tags = ['title', "authors", 'publisher', 'locdate', 'description', 'url', 'image']
+    var tags = ['title', "authors", 'publisher', 'locdate', 'url']
     return (
       <TableBody key={("b"+i)}> 
-        {(()=>{
+        {[(()=>{
           return Object.entries(o).map((e, j) => {
             //console.log(e[0])
             if (tags.includes(e[0]) && typeof e[1] === 'string' && e[1] !== '') {
               console.log(e[1])
-              return this.getTableScrollRow(i, j, e[1], e[0].includes("image"))
+              return this.getTableScrollRow(i, j, e[1], e[0]==='url')
             } else {
               console.log("getTableScrollBody skipping " + e[0] + " with " + e[1])
             }
             return null
-          })
-        })()}
+          }) 
+        })(), (o['description'] !== '')?this.getTableScrollRowImageDesc(i, 
+                o['image'],
+                o['description']
+              ):null]}
       </TableBody>
     );
   }
@@ -565,7 +601,7 @@ function App() {
         //contentLabel="More Information"
         center
       >
-        <RefURLs urls={refurls} />
+        <RefURLs urls={refurls} snackBarHandle={handleClick} />
         <Button variant="contained" onClick={closeModalInfo}>Close</Button>
       </Modal>
     </div>

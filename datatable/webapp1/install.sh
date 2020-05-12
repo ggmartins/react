@@ -5,5 +5,3 @@ npm i react-data-table-component
 npm i react-copy-to-clipboard
 npm i react-modal-image
 npm i react-responsive-modal
-npm i html-react-parser
-npm i react-traverse
