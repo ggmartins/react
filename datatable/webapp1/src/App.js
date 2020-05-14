@@ -38,7 +38,7 @@ const columns = [
     name: 'Title',
     selector: 'title',
     sortable: true,
-    maxWidth: '200px',
+    maxWidth: '180px',
   },
   {
     name: 'Description',
@@ -49,25 +49,25 @@ const columns = [
     name: 'Start',
     selector: 'datestart',
     sortable: true,
-    maxWidth: '10px',
+    maxWidth: '8px',
   },
   {
     name: 'End',
     selector: 'dateend',
     sortable: true,
-    maxWidth: '10px',
+    maxWidth: '8px',
   },
   {
     name: 'Size',
     selector: 'compressedsize',
     sortable: true,
-    maxWidth: '10px',
+    maxWidth: '8px',
   },
   {
     name: 'Key Words',
     selector: 'keywords',
     sortable: true,
-    minWidth: '500px',
+    minWidth: '300px',
   }
 
 ];
@@ -340,6 +340,7 @@ class RefURLs extends React.Component {
     dict.rec = rec
     dict.title = ''
     dict.url = rec.url
+    dict.image = rec.image
     if (rec.authors)
       dict.authors = rec.authors
     if (rec.publisher)
@@ -420,14 +421,20 @@ class RefURLs extends React.Component {
       <TableRow key={("rf_"+i)}>
         <TableCell key={("rf_"+i)}>
              {(()=>{
-               return ( //TODO get rid of magic numbers
-                <div>
+               var image = (<></>)
+               if (img !== undefined && img !== '') {
+                image = (
                   <img 
                     src={img}  //TODO check image in
                     alt={desc} //TODO alt
                     style={{maxWidth: 500, maxHeight: 100, float: "left", marginRight: 10}} 
                     crossOrigin={''} 
                   />
+                )
+               }
+               return ( //TODO get rid of magic numbers
+                <div>
+                  {image}
                   <p style={{marginLeft: 10}}>{desc}</p>
                 </div>
                )

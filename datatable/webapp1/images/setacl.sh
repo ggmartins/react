@@ -1,3 +1,5 @@
-aws s3 cp OG-DB403_201908_SOC_20190815130245.png s3://replace/images/ --profile replace
-aws s3api put-object-acl --acl public-read  --bucket replace --key images/OG-DB403_201908_SOC_20190815130245.png --profile replace
-aws s3api put-bucket-cors --bucket replace --profile cdac-misc --cors-configuration '{"CORSRules": [{"AllowedOrigins": ["*"], "AllowedMethods":["GET"]}]}'
+#!/bin/bash
+
+aws s3 cp $1 s3://cdac-misc/images/ --profile cdac-misc
+aws s3api put-object-acl --acl public-read  --bucket cdac-misc --key images/$1 --profile cdac-misc
+#aws s3api put-bucket-cors --bucket cdac-misc --profile cdac-misc --cors-configuration '{"CORSRules": [{"AllowedOrigins": ["*"], "AllowedMethods":["GET"]}]}'

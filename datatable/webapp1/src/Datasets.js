@@ -2,7 +2,7 @@ export default [
   {
     id: 1,
     title: 'Project BISmark',
-    keywords: 'bismark, throughput, broadband, computer networks, speedtest, traceroute, internet, performance',
+    keywords: 'speedtest, throughput, broadband, networking, performance, bismark',
     formats: 'csv, psql',
     shortdesc: 'Broadband Internet Service Benchmark Dataset Collection',
     compressedsize: '8GB',
@@ -18,7 +18,7 @@ export default [
       primary: [
         {
           type: "Primary Location",
-          url: "http://projectbismark.net",
+          url: "https://projectbismark.net",
           metatags_enable: true,
           metatags_url: "http://projectbismark.net",
           metatags_title: "Broadband Internet Service Benchmark",
@@ -56,9 +56,10 @@ export default [
         },
         {
           type: "Media Coverage",
-          title: "CDAC Blog Post",
+          title: "Homepage | CDAC",
           description: "Measuring the Effects of the COVID-19 Pandemic on Broadband Access Networks to Inform Robust Network Design | CDAC",
           url: "https://cdac.uchicago.edu/broadband",
+          image: "https://cdac-misc.s3.us-east-2.amazonaws.com/images/CDAC_Logo_RGB_v01Full.svg",
           metatags_enable: false,
         },
         {
@@ -119,5 +120,96 @@ export default [
         }
       ]
     },
+  },
+  {
+    id: 2,
+    title: 'Network Microscope',
+    keywords: 'video, applications, performance, inference, machine learning, networking, netmicroscope',
+    formats: 'json, pickle',
+    shortdesc: 'Real-time inference of Quality of Experience with video streaming',
+    compressedsize: '140GB',
+    uncompressedsize: 'Unknown',
+    datestart: '01-2016',
+    dateend: '08-2018',
+    dateapprox: true,
+    images: ['https://netmicroscope.com/images/nmcharts.png'],
+    sampledataurl: 'TBD',
+    contact: 'Prof. Nick Feamster',
+    description: 'Dataset collection on passive network monitoring of Over-The-Top internet applications such as Netflix, Youtube and Facebook.',
+    refurls:{
+      primary: [
+        {
+          type: "Primary Location",
+          url: "https://netmicroscope.com/",
+          metatags_enable: true,
+          metatags_url: "https://netmicroscope.com/",
+          metatags_title: "Real-time inference of Quality of Experience with video streaming",
+          metatags_description: "Dataset collection on passive network monitoring of over-the-top internet applications such as Netflix, Youtube and Facebook.",
+          metatags_image: "https://netmicroscope.com/images/nmcharts.png",
+        }
+      ],
+      secondary : [
+        {
+          type: "Publication",
+          title : 'Inferring Streaming Video Quality from Encrypted Traffic: Practical Models and Deployment Experience',
+          authors : 'F. Bronzino*, P. Schmitt*, S.Ayoubi, G. Martins, R. Teixeira, N. Feamster (*Co-First Authors)',
+          publisher : 'Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS) and at ACM Sigmetrics',
+          locdate : 'Boston, USA June 8-12, 2020',
+          url: 'https://netmicroscope.com/papers/paper_cr.pdf',
+          metatags_enable: false,
+        },
+        {
+          type: "Video",
+          title: "Youtube / Facebook / Netflix / SpeedTest Network Traffic Monitoring",
+          description: "Network Traffic Real-Time Monitoring",
+          url: "https://www.youtube.com/watch?v=ix5GTHW4D3U",
+          metatags_enable: true,
+          metatags_url: "https://www.youtube.com/watch?v=ix5GTHW4D3U",
+          metatags_title: "Youtube / Facebook / Netflix / SpeedTest Network Traffic Monitoring",
+          metatags_description: "Network Traffic Real-Time Monitoring",
+          metatags_image: "https://cdac-misc.s3.us-east-2.amazonaws.com/images/netmicroscope_yt.png"
+        }
+      ]
+    }
+  },
+  {
+    id: 3,
+    title: 'IoT Inspector',
+    keywords: 'iot, internet of things, privacy, security, networking',
+    formats: 'json, pickle',
+    shortdesc: 'An open-source tool that helps you learn more about your IoT devices',
+    compressedsize: '140GB',
+    uncompressedsize: 'Unknown',
+    datestart: '01-2016',
+    dateend: '08-2018',
+    dateapprox: true,
+    images: ['https://lh3.googleusercontent.com/xPyyR00HSmmGBjK7r96Ng-4eh3nnh6o7t11ruFBYALB8EMsNbAdJYhSNedwNjzGM07bUAbIlWGMI8Hnd-pFIeg=w800'],
+    sampledataurl: 'TBD',
+    contact: 'Prof. Nick Feamster',
+    description: 'An open-source desktop tool with a one-click install process. Automatically discovers IoT devices and analyzes their network traffic. Helps you identify security and privacy issues with graphs and tables. Requires minimal technical skills and no special hardware. Use it to quickly inspect devices (e.g., from your computer) or continuously monitor your network (e.g., from a Raspberry Pi)',
+    refurls:{
+      primary: [
+        {
+          type: "Primary Location",
+          url: "https://iotinspector.org",
+          metatags_enable: true,
+          metatags_url: "https://iotinspector.org",
+          metatags_title: "Our smart devices are watching us.",
+          metatags_description: "An open-source desktop tool with a one-click install process",
+          metatags_image: "https://lh3.googleusercontent.com/xPyyR00HSmmGBjK7r96Ng-4eh3nnh6o7t11ruFBYALB8EMsNbAdJYhSNedwNjzGM07bUAbIlWGMI8Hnd-pFIeg=w800",
+        }
+      ],
+      secondary : [
+        {
+          type: "Publication",
+          title : 'Inferring Streaming Video Quality from Encrypted Traffic: Practical Models and Deployment Experience',
+          authors : 'F. Bronzino*, P. Schmitt*, S.Ayoubi, G. Martins, R. Teixeira, N. Feamster (*Co-First Authors)',
+          publisher : 'Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS) and at ACM Sigmetrics',
+          locdate : 'Boston, USA June 8-12, 2020',
+          url: 'https://netmicroscope.com/papers/paper_cr.pdf',
+          metatags_enable: false,
+        }
+      ]
+    }
   }
 ]
